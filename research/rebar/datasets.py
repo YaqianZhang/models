@@ -23,7 +23,7 @@ import random
 import os
 import scipy.io
 import numpy as np
-import cPickle as pickle
+import _pickle as pickle
 import tensorflow as tf
 import config
 gfile = tf.gfile
@@ -51,7 +51,7 @@ def read_MNIST(binarize=False):
     x_test: 10k test images
 
   """
-  with gfile.FastGFile(os.path.join(config.DATA_DIR, config.MNIST_BINARIZED), 'r') as f:
+  with gfile.FastGFile(os.path.join(config.DATA_DIR, config.MNIST_BINARIZED), 'rb') as f:
     (x_train, _), (x_valid, _), (x_test, _) = pickle.load(f)
 
   if not binarize:

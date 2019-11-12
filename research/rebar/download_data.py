@@ -25,12 +25,13 @@ import os
 import config
 import struct
 import numpy as np
-import cPickle as pickle
+import _pickle as pickle
 import datasets
+import urllib.request
 
-MNIST_URL = 'see README'
-MNIST_BINARIZED_URL = 'see README'
-OMNIGLOT_URL = 'see README'
+MNIST_URL = 'http://yann.lecun.com/exdb/mnist'
+MNIST_BINARIZED_URL = 'http://www.cs.toronto.edu/~larocheh/public/datasets/binarized_mnist'
+OMNIGLOT_URL = 'https://github.com/yburda/iwae/raw/master/datasets/OMNIGLOT/chardata.mat'
 
 MNIST_FLOAT_TRAIN = 'train-images-idx3-ubyte'
 
@@ -53,7 +54,7 @@ if __name__ == '__main__':
   # Get MNIST and convert to npy file
   local_filename = os.path.join(config.DATA_DIR, MNIST_FLOAT_TRAIN)
   if not os.path.exists(local_filename):
-    urllib.urlretrieve("%s/%s.gz" % (MNIST_URL, MNIST_FLOAT_TRAIN), local_filename+'.gz')
+    urllib.request.urlretrieve("%s/%s.gz" % (MNIST_URL, MNIST_FLOAT_TRAIN), local_filename+'.gz')
     with gzip.open(local_filename+'.gz', 'rb') as f:
       file_content = f.read()
     with open(local_filename, 'wb') as f:
@@ -72,18 +73,22 @@ if __name__ == '__main__':
     url = '%s/binarized_mnist_%s.amat' % (MNIST_BINARIZED_URL, split)
     local_filename = os.path.join(config.DATA_DIR, filename)
     if not os.path.exists(local_filename):
-      urllib.urlretrieve(url, local_filename)
+      urllib.request.urlretrieve(url, local_filename)
 
     with open(local_filename, 'rb') as f:
-      mnist_binarized.append((np.array([map(int, line.split()) for line in f.readlines()]).astype('float32'), None))
+      ll =[list(map(int, line.split())) for line in f.readlines()]
+      print("!!",type(ll[0]))
+      ele = (np.array(ll).astype('float32'), None)
+      print(type(ele))
+      mnist_binarized.append(ele)
 
   # save in a nice format
-  with open(os.path.join(config.DATA_DIR, config.MNIST_BINARIZED), 'w') as out:
+  with open(os.path.join(config.DATA_DIR, config.MNIST_BINARIZED), 'wb') as out:
     pickle.dump(mnist_binarized, out)
 
   # Get Omniglot
   local_filename = os.path.join(config.DATA_DIR, config.OMNIGLOT)
   if not os.path.exists(local_filename):
-    urllib.urlretrieve(OMNIGLOT_URL,
+    urllib.request.urlretrieve(OMNIGLOT_URL,
                        local_filename)
 
