@@ -103,7 +103,7 @@ def train(sbn, train_xs, valid_xs, test_xs, training_steps, debug=False):
     batch_size = sbn.hparams.batch_size
     scores = []
     n = train_xs.shape[0]
-    index = range(n)
+    index = list(range(n))
 
     while not sv.should_stop():
       lHats = []

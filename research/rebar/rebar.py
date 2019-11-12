@@ -301,10 +301,10 @@ class SBN(object):  # REINFORCE
     learning_signal = tf.stop_gradient(U.center(reinforce_learning_signal))
     self.optimizerLoss = -(learning_signal*logQHard +
                            reinforce_model_grad)
-    self.lHat = map(tf.reduce_mean, [
+    self.lHat = list(map(tf.reduce_mean, [
         reinforce_learning_signal,
         U.rms(learning_signal),
-    ])
+    ]))
 
     return reinforce_learning_signal
 
@@ -870,10 +870,10 @@ class SBNSimpleMuProp(SBN):
   def _create_loss(self):
     simple_muprop_gradient, debug = self.get_simple_muprop_gradient()
 
-    self.lHat = map(tf.reduce_mean, [
+    self.lHat = list(map(tf.reduce_mean, [
         debug['ELBO'],
         debug['muELBO'],
-    ])
+    ]))
 
     return debug['ELBO'], simple_muprop_gradient
 
@@ -890,10 +890,10 @@ class SBNMuProp(SBN):
   def _create_loss(self):
     muprop_gradient, debug = self.get_muprop_gradient()
 
-    self.lHat = map(tf.reduce_mean, [
+    self.lHat = list(map(tf.reduce_mean, [
         debug['ELBO'],
         debug['muELBO'],
-    ])
+    ]))
 
     return debug['ELBO'], muprop_gradient
 
@@ -911,9 +911,9 @@ class SBNNVIL(SBN):
   def _create_loss(self):
     nvil_gradient, debug = self.get_nvil_gradient()
 
-    self.lHat = map(tf.reduce_mean, [
+    self.lHat = list(map(tf.reduce_mean, [
         debug['ELBO'],
-    ])
+    ]))
 
     return debug['ELBO'], nvil_gradient
 
@@ -931,10 +931,10 @@ class SBNRebar(SBN):
   def _create_loss(self):
     rebar_gradient, debug, variance_objective = self.get_rebar_gradient()
 
-    self.lHat = map(tf.reduce_mean, [
+    self.lHat = list(map(tf.reduce_mean, [
         debug['ELBO'],
-    ])
-    self.lHat.extend(map(tf.reduce_mean, debug['etas']))
+    ]))
+    self.lHat.extend(list(map(tf.reduce_mean, debug['etas'])))
 
     return debug['ELBO'], rebar_gradient, variance_objective
 
@@ -956,10 +956,10 @@ class SBNDynamicRebar(SBN):
   def _create_loss(self):
     rebar_gradient, debug, variance_objective, variance_objective_grad = self.get_dynamic_rebar_gradient()
 
-    self.lHat = map(tf.reduce_mean, [
+    self.lHat = list(map(tf.reduce_mean, [
         debug['ELBO'],
         self.temperature_variable,
-    ])
+    ]))
     self.lHat.extend(debug['etas'])
 
     return debug['ELBO'], rebar_gradient, variance_objective, variance_objective_grad
@@ -1022,12 +1022,12 @@ class SBNTrackGradVariances(SBN):
       self.grad_variances.append(tf.reduce_mean(s - tf.square(mu)))
       deviations.append(tf.reduce_mean(tf.square(f - mu)))
 
-    self.lHat = map(tf.reduce_mean, [
+    self.lHat = list(map(tf.reduce_mean, [
         ELBO,
         self.temperature_variable,
         variance_objective_grad,
         variance_objective_grad*variance_objective_grad,
-    ])
+    ]))
     self.lHat.extend(deviations)
     self.lHat.append(tf.log(tf.reduce_mean(mu*mu)))
     #    self.lHat.extend(map(tf.log, grad_variances))
@@ -1077,10 +1077,10 @@ class SBNGumbel(SBN):
     softELBO, _ = self._generator_network(softSamples, logQ)
 
     self.optimizerLoss = -softELBO
-    self.lHat = map(tf.reduce_mean, [
+    self.lHat = list(map(tf.reduce_mean, [
         hardELBO,
         softELBO,
-    ])
+    ]))
 
     return hardELBO
 
